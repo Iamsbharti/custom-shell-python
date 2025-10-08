@@ -1,11 +1,32 @@
 import sys
+import os
 
 # dictionary to hold the commands and their corresponding functions
 commands = {
-    "exit": lambda x: sys.exit(int(x)),
+    "exit": lambda x: sys.exit(int(x) if x else 0),
     "echo": lambda x: print(x),
-    "type": lambda x: print(f"{x} is a shell builtin") if x in ['exit', 'echo', 'type'] else print(f"{x}: not found")
+    "type": lambda x: ((type_command(x)))
 }
+def is_command_executable(command):
+    # check each directory in PATH for an executable file named x
+    for directory in os.environ.get("PATH", "").split(os.pathsep):
+        full_path = os.path.join(directory, command)
+        if os.path.isfile(full_path) and os.access(full_path, os.X_OK):
+            return full_path
+    return None
+
+def type_command(x):
+    # check if x is a shell builtin    
+    if x in ['exit', 'echo', 'type']:
+        print(f"{x} is a shell builtin")
+        return
+    executable_path = is_command_executable(x)
+    if executable_path:
+        print(f"{x} is {executable_path}")
+    else:
+        print(f"{x}: not found")
+
+    
 
 def main():
     while True:
