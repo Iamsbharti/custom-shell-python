@@ -7,8 +7,18 @@ commands = {
     "exit": lambda x: sys.exit(int(x) if x else 0),
     "echo": lambda x: print(x),
     "type": lambda x: ((type_command(x))),
-    "pwd": lambda x: print(os.getcwd())
+    "pwd": lambda x: print(os.getcwd()),
+    "cd": lambda x: ((cd_command(x))),
 }
+def cd_command(path):
+    try:
+        if(os.path.isdir(path)):
+            os.chdir(path)
+        else:
+            print(f"cd: {path}: No such file or directory")
+    except Exception as e:
+        print(f"cd: {path} : {e}")
+
 
 def is_command_executable(command):
     # check each directory in PATH for an executable file named x
@@ -20,7 +30,7 @@ def is_command_executable(command):
 
 def type_command(x):
     # check if x is a shell builtin    
-    if x in ['exit', 'echo', 'type', 'pwd']:
+    if x in ['exit', 'echo', 'type', 'pwd', 'cd']:
         print(f"{x} is a shell builtin")
         return
     executable_path = is_command_executable(x)
