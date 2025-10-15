@@ -1,12 +1,15 @@
 import sys
 import os
+import subprocess
 
 # dictionary to hold the commands and their corresponding functions
 commands = {
     "exit": lambda x: sys.exit(int(x) if x else 0),
     "echo": lambda x: print(x),
-    "type": lambda x: ((type_command(x)))
+    "type": lambda x: ((type_command(x))),
+    "pwd": lambda x: print(os.getcwd())
 }
+
 def is_command_executable(command):
     # check each directory in PATH for an executable file named x
     for directory in os.environ.get("PATH", "").split(os.pathsep):
@@ -17,7 +20,7 @@ def is_command_executable(command):
 
 def type_command(x):
     # check if x is a shell builtin    
-    if x in ['exit', 'echo', 'type']:
+    if x in ['exit', 'echo', 'type', 'pwd']:
         print(f"{x} is a shell builtin")
         return
     executable_path = is_command_executable(x)
@@ -44,10 +47,14 @@ def main():
             if args:
                 commands[cmd](args)
             else:
-                commands[cmd]()
+                commands[cmd](0 if command == "exit" else None)
         else:
-            print(f"{cmd}: not found")
-
+            # run external command
+            executable_path = is_command_executable(cmd)
+            if executable_path:
+                subprocess.run([cmd] + (parts[1:] if len(parts) > 1 else []))
+            else:
+                print(f"{cmd}: not found")
         
 if __name__ == "__main__":
     main()
