@@ -1,19 +1,26 @@
 import sys
 import os
 import subprocess
+import shlex
 
 # dictionary to hold the commands and their corresponding functions
 commands = {
     "exit": lambda x: sys.exit(int(x) if x else 0),
-    "echo": lambda x: print(x),
+    "echo": lambda x: ((echo_command(x))),
     "type": lambda x: ((type_command(x))),
     "pwd": lambda x: print(os.getcwd()),
     "cd": lambda x: ((cd_command(x))),
 }
+
+def echo_command(text):
+    print(text.replace("'", ""))
+
 def cd_command(path):
     try:
         if(os.path.isdir(path)):
             os.chdir(path)
+        elif path == '~':
+            os.chdir(os.path.expanduser('~'))
         else:
             print(f"cd: {path}: No such file or directory")
     except Exception as e:
@@ -46,12 +53,12 @@ def main():
         sys.stdout.write("$ ")
         command = input()
         # split the command into parts [command, arg1, arg2, ...]
-        parts =  command.split(maxsplit=-1)
+        parts =  shlex.split(command)
         cmd = parts[0]
 
         # get the arguments if any by joining the rest of the parts
         args = ' '.join(parts[1:]) if len(parts) > 1 else None
-
+        
         # search the dictionary for the command and execute it
         if cmd in commands:
             if args:
