@@ -13,7 +13,7 @@ commands = {
 }
 
 def echo_command(text):
-    print(text.replace("'", ""))
+    print(text.replace("'", "'"))
 
 def cd_command(path):
     try:
@@ -58,7 +58,6 @@ def main():
 
         # get the arguments if any by joining the rest of the parts
         args = ' '.join(parts[1:]) if len(parts) > 1 else None
-        
         # search the dictionary for the command and execute it
         if cmd in commands:
             if args:
